@@ -17,6 +17,7 @@ To get started with Squirrel, add to your `composer.json` file as a dependency:
 After installing the Squirrel library, you simply need to use the Squirrel trait for any model you want to implement cacheing for.  Typically, you would implement the trait in your super-class such that all your sub-classes would automatically inherit the functionality.
 
 ```php
+<?php
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
