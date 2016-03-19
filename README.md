@@ -19,6 +19,7 @@ After installing the Squirrel library, there may be a couple configuration steps
 By default, Laravel assumes table names are snake case and plural; And class names are singular, and Pascal Case. Squirrel makes the same assumptions, however, it doesn't know which namespace to use.  So you will need to implement the following configuration to let Squirrel know your model namespace.
 
 ```php
+<?php
 use \Laravel\Cache\SquirrelConfig;
 
 // In simple use cases where all Models are in the same namespace, you can simply set the common namespace
