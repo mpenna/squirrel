@@ -99,3 +99,11 @@ class User extends Model
     }
 }
 ```
+
+### More Global Configuration
+
+```php
+SquirrelConfig::setCacheActive(false);              // Turn Squirrel off globally
+SquirrelConfig::isCacheActive();                    // Retrns the config value if Squirrel is active or not.
+SquirrelConfig::setCacheKeyPrefix("Squirrel::");    // Prefix used for all stored Cache Keys
+```
