@@ -30,8 +30,10 @@ SquirrelConfig::setCommonModelNamespace("App");
 
 /******* OPTIONAL DEPENDING ON YOUR APP ********/
 
-// If you need more control over establishing namespace, you may implement your own method to map 
-// table name to class name the following snippet is the default behavior for Squirrel.
+// If you need more control over establishing the namespace or the class name, you may implement your own 
+// method to map a table name to a class name.  
+// Note: This method is only called once per table, then cached for performance considerations
+// The following snippet is the default behavior for Squirrel.
 SquirrelConfig::setTableToClassMapper( function($tableName) {
     $namespace = "\\App\\";
     $className = studly_case(str_singular($tableName));
