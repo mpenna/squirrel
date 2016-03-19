@@ -20,7 +20,7 @@ By default, Laravel assumes table names are snake case and plural; And class nam
 
 ```php
 <?php
-use \Laravel\Cache\SquirrelConfig;
+use Eloquent\Cache\SquirrelConfig;
 
 /******* REQUIRED CONFIG ********/
 
@@ -50,7 +50,7 @@ To use the Squirrel library, you simply need to use the Squirrel trait for any m
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use \Laravel\Cache\Squirrel;
+use Eloquent\Cache\Squirrel;
 
 class MyAppSuperModel extends Model
 {
@@ -69,7 +69,7 @@ Sometimes you'll need custom configuration on a per-model basis.  Implement thes
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use \Laravel\Cache\Squirrel;
+use Eloquent\Cache\Squirrel;
 
 class User extends Model
 {
