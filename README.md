@@ -14,7 +14,29 @@ To get started with Squirrel, add to your `composer.json` file as a dependency:
 
 ### Configuration
 
-After installing the Squirrel library, you simply need to use the Squirrel trait for any model you want to implement cacheing for.  Typically, you would implement the trait in your super-class such that all your sub-classes would automatically inherit the functionality.
+After installing the Squirrel library, there may be a couple configuration steps required to ensure the library can effectively cache and retrieve Models appropriately.  Namely, we need to establish how to construct the Model class name, from the queried table name.  By default, Laravel assumes table names are snake case and plural; And class names are singular, and Pascal Case; Squirrel assumes the same, however, doesn't know which namespace to use.
+
+You will need to implement the following configuration to let Squirrel know your model namespace.
+
+```php
+use \Laravel\Cache\SquirrelConfig;
+
+// In simple use cases where all Models are in the same namespace, you can simply set the common namespace
+// and it will be used for every class name.
+SquirrelConfig::setCommonModelNamespace("\App\");
+
+// If you need more control over establishing namespace, you may implement your own method to map table name to class name
+// The following snippet is the default behavior for Squirrel.
+SquirrelConfig::setTableToClassMapper( function($tableName) {
+    $namespace = SquirrelConfig::getCommonModelNamespace();
+    $className = SquirrelConfig::tableNameToClassName($tableName);
+    return $namespace . $className;
+});
+```
+
+### Basic Usage
+
+To use the Squirrel library, you simply need to use the Squirrel trait for any model you want to implement cacheing for.  Typically, you would implement the trait in your super-class such that all your sub-classes would automatically inherit the functionality.
 
 ```php
 <?php
@@ -29,8 +51,3 @@ class User extends Model
     
 }
 ```
-
-the only required configuration is to tell Squirrel how to translate a table name, into a Model Class name in your code base.
-
-
-\Eloquent\Cache\SquirrelConfig::setCommonModelNamespace( '\Namespace\Path' );
