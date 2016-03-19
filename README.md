@@ -23,7 +23,7 @@ use \Laravel\Cache\SquirrelConfig;
 
 // In simple use cases where all Models are in the same namespace, you can simply set the common namespace
 // and it will be used for every class name.
-SquirrelConfig::setCommonModelNamespace("\App\");
+SquirrelConfig::setCommonModelNamespace('\App\');
 
 // If you need more control over establishing namespace, you may implement your own method to map table name to class name
 // The following snippet is the default behavior for Squirrel.
