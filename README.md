@@ -10,7 +10,7 @@ Squirrel is open-sourced software licensed under the [MIT license](http://openso
 
 To get started with Squirrel, add to your `composer.json` file as a dependency:
 
-    `composer require davidmpeace/squirrel`
+    composer require davidmpeace/squirrel
 
 ### Configuration
 
