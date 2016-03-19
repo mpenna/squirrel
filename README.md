@@ -22,9 +22,13 @@ By default, Laravel assumes table names are snake case and plural; And class nam
 <?php
 use \Laravel\Cache\SquirrelConfig;
 
+/******* REQUIRED CONFIG ********/
+
 // In simple use cases where all Models are in the same namespace, you can simply set the common namespace
 // and it will be used for every class name.
 SquirrelConfig::setCommonModelNamespace("App");
+
+/******* OPTIONAL DEPENDING ON YOUR APP ********/
 
 // If you need more control over establishing namespace, you may implement your own method to map 
 // table name to class name the following snippet is the default behavior for Squirrel.
@@ -50,5 +54,47 @@ class MyAppSuperModel extends Model
 {
     use Squirrel;
     
+}
+```
+
+That's it!  You will now automatically inherit all the magic of Squirrel.
+
+### Per Model Configuration
+
+Sometimes you'll need custom configuration on a per-model basis.  Implement these methods as required to override the default behavior.
+
+```php
+<?php
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use \Laravel\Cache\Squirrel;
+
+class User extends Model
+{
+    use Squirrel;
+    
+    // Implement this method, to establish the unique keys on your table.  Doing this gives Squirrel more power
+    // in establishing which queries are cacheable.  Return an array of string column names, or nested arrays for 
+    // compound keys.
+    // Defaults to just: ['id']
+    public static function getUniqueKeys()
+    {
+        return ['id', ['account_id', 'email'] ];
+    }
+    
+    // Simple method that you can implement to either turn cacheing on or off for this model specifically.
+    // Defaults to: true.
+    protected static function isModelCacheActive()
+    {
+        return true; 
+    }
+    
+    // Implement this method, to change the expiration minutes timeout, when cacheing this model.
+    // Defaults to: 24 hours
+    protected static function cacheExpirationMinutes()
+    {
+        return (60 * 24); 
+    }
 }
 ```
