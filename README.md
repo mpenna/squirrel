@@ -14,9 +14,9 @@ To get started with Squirrel, add to your `composer.json` file as a dependency:
 
 ### Configuration
 
-After installing the Squirrel library, there may be a couple configuration steps required to ensure the library can effectively cache and retrieve Models appropriately.  Namely, we need to establish how to construct the Model class name, from the queried table name.  By default, Laravel assumes table names are snake case and plural; And class names are singular, and Pascal Case; Squirrel assumes the same, however, doesn't know which namespace to use.
+After installing the Squirrel library, there may be a couple configuration steps required to ensure the library can effectively cache and retrieve Models appropriately.  Namely, we need to establish how to construct the Model class name, from the queried table name.  
 
-You will need to implement the following configuration to let Squirrel know your model namespace.
+By default, Laravel assumes table names are snake case and plural; And class names are singular, and Pascal Case. Squirrel makes the same assumptions, however, it doesn't know which namespace to use.  So you will need to implement the following configuration to let Squirrel know your model namespace.
 
 ```php
 use \Laravel\Cache\SquirrelConfig;
