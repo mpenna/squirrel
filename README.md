@@ -100,7 +100,7 @@ class User extends Model
 }
 ```
 
-### More Global Configuration
+### Optional Global Configuration
 
 ```php
 SquirrelConfig::setCacheActive(false);              // Turn Squirrel off globally
