@@ -55,7 +55,6 @@ use \Laravel\Cache\Squirrel;
 class MyAppSuperModel extends Model
 {
     use Squirrel;
-    
 }
 ```
 
