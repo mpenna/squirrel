@@ -107,3 +107,15 @@ SquirrelConfig::setCacheActive(false);              // Turn Squirrel off globall
 SquirrelConfig::isCacheActive();                    // Retrns the config value if Squirrel is active or not.
 SquirrelConfig::setCacheKeyPrefix("Squirrel::");    // Prefix used for all stored Cache Keys
 ```
+
+### Public Access Methods
+
+```php
+$user->isCached();          // Returns true if the current object is stored in cache.
+$user->remember();          // Will store the object in Cache
+$user->forget();            // Will remove the object from Cache
+$user->cacheKeys();         // Will return an array of all the Cache keys used to store the object
+$user->primaryCacheKey();   // Will returnthe primary cache key for the object.
+
+User::isCacheing();         // Returns true if Cacheing is on for Users
+```
