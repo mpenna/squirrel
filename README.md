@@ -26,8 +26,8 @@ use \Laravel\Cache\SquirrelConfig;
 // and it will be used for every class name.
 SquirrelConfig::setCommonModelNamespace("App");
 
-// If you need more control over establishing namespace, you may implement your own method to map table name to class name
-// The following snippet is the default behavior for Squirrel.
+// If you need more control over establishing namespace, you may implement your own method to map 
+// table name to class name the following snippet is the default behavior for Squirrel.
 SquirrelConfig::setTableToClassMapper( function($tableName) {
     $namespace = SquirrelConfig::getCommonModelNamespace();
     $className = SquirrelConfig::tableNameToClassName($tableName);
@@ -46,7 +46,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use \Laravel\Cache\Squirrel;
 
-class User extends Model
+class MyAppSuperModel extends Model
 {
     use Squirrel;
     
