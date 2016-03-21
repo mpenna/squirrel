@@ -12,38 +12,9 @@ To get started with Squirrel, add to your `composer.json` file as a dependency:
 
     composer require davidmpeace/squirrel
 
-### Configuration
-
-After installing the Squirrel library, there may be a couple configuration steps required to ensure the library can effectively cache and retrieve Models appropriately.  Namely, we need to establish how to construct the Model class name, from the queried table name.  
-
-By default, Laravel assumes table names are snake case and plural; And class names are singular, and Pascal Case. Squirrel makes the same assumptions, however, it doesn't know which namespace to use.  So you will need to implement the following configuration to let Squirrel know your model namespace.
-
-```php
-<?php
-use Eloquent\Cache\SquirrelConfig;
-
-/******* REQUIRED CONFIG ********/
-
-// In simple use cases where all Models are in the same namespace, you can simply set the common namespace
-// and it will be used for every class name.
-SquirrelConfig::setCommonModelNamespace("App");
-
-/******* OPTIONAL DEPENDING ON YOUR APP ********/
-
-// If you need more control over establishing the namespace or the class name, you may implement your own 
-// method to map a table name to a class name.  
-// Note: This method is only called once per table, then cached for performance considerations
-// The following snippet is the default behavior for Squirrel.
-SquirrelConfig::setTableToClassMapper( function($tableName) {
-    $namespace = "\\App\\";
-    $className = studly_case(str_singular($tableName));
-    return $namespace . $className;
-});
-```
-
 ### Basic Usage
 
-To use the Squirrel library, you simply need to use the Squirrel trait for any model you want to implement cacheing for.  Typically, you would implement the trait in your super-class such that all your sub-classes would automatically inherit the functionality.
+To use the Squirrel library, you simply need to use the Squirrel trait for any model you want to implement cacheing for.  Typically, you would want to implement the trait in your super-class so that all your sub-classes will automatically inherit the functionality.
 
 ```php
 <?php
@@ -60,9 +31,9 @@ class MyAppSuperModel extends Model
 
 That's it!  You will now automatically inherit all the magic of Squirrel.
 
-### Per Model Configuration
+### Configuration
 
-Sometimes you'll need custom configuration on a per-model basis.  Implement these methods as required to override the default behavior.
+Sometimes you'll need custom configuration on a per-model basis.  Here are some examples of methods you can implement to override default behavior.
 
 ```php
 <?php
@@ -75,25 +46,36 @@ class User extends Model
 {
     use Squirrel;
     
-    // Implement this method, to establish the unique keys on your table.  Doing this gives Squirrel more power
-    // in establishing which queries are cacheable.  Return an array of string column names, or nested arrays for 
-    // compound keys.
-    // Defaults to just: ['id']
-    public static function getUniqueKeys()
+    /**
+     * Implement this method, to establish additional unique keys on your table.  Doing this gives Squirrel more power
+     * in establishing more cacheable queries.  Return an array of string column names, or nested arrays for 
+     * compound keys.
+     *
+     * Default Return: Returns only the primary key for the object.
+     */
+    public function getUniqueKeys()
     {
-        return ['id', ['account_id', 'email'] ];
+        $primaryKey = $this->getKeyName();
+        return [$primaryKey, 'uuid', ['account_id', 'email']];
     }
     
-    // Simple method that you can implement to either turn cacheing on or off for this model specifically.
-    // Defaults to: true.
-    protected static function isModelCacheActive()
+    /**
+     * Implement this method to cacheing on or off for this model specifically.  Returning false on this method
+     * does not affect other models also using Squirrel.
+     *
+     * Default Return: true
+     */
+    protected function isCacheActive()
     {
         return true; 
     }
     
-    // Implement this method, to change the expiration minutes timeout, when cacheing this model.
-    // Defaults to: 24 hours
-    protected static function cacheExpirationMinutes()
+    /**
+     * Implement this method to change the expiration minutes timeout when cacheing this model.
+     *
+     * Defaults Return: 24 hours
+     */
+    public function cacheExpirationMinutes()
     {
         return (60 * 24); 
     }
@@ -103,19 +85,26 @@ class User extends Model
 ### Optional Global Configuration
 
 ```php
-SquirrelConfig::setCacheActive(false);              // Turn Squirrel off globally
-SquirrelConfig::isCacheActive();                    // Retrns the config value if Squirrel is active or not.
-SquirrelConfig::setCacheKeyPrefix("Squirrel::");    // Prefix used for all stored Cache Keys
+use Eloquent\Cache\SquirrelCache;
+
+SquirrelCache::setCacheActive(false);              // Turn Squirrel ON or OFF globally
+SquirrelCache::isCacheActive();                    // Retrns the config value if Squirrel is active or not globally.
+SquirrelCache::setCacheKeyPrefix("Squirrel::");    // Prefix used for all stored Cache Keys
+SquirrelCache::getCacheKeyPrefix( "App\User" );    // Returns the cache key prefix, with an option class name
 ```
 
 ### Public Access Methods
+
+These methods are available to any Object using the Squirrel Trait
 
 ```php
 $user->isCached();          // Returns true if the current object is stored in cache.
 $user->remember();          // Will store the object in Cache
 $user->forget();            // Will remove the object from Cache
+$user->getUniqueKeys();     // Get's all the unique keys on the Object.
 $user->cacheKeys();         // Will return an array of all the Cache keys used to store the object
-$user->primaryCacheKey();   // Will returnthe primary cache key for the object.
+$user->primaryCacheKey();   // Will return the primary cache key for the object.
+$user->cacheExpirationMinutes(); // Returns the number of minutes cache records stay available.
 
-User::isCacheing();         // Returns true if Cacheing is on for Users
+User::isCacheing();         // Returns true if Cacheing is on for User models
 ```
