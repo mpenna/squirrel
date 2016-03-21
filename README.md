@@ -98,15 +98,14 @@ SquirrelCache::getCacheKeyPrefix( "App\User" );    // Returns the cache key pref
 These methods are available to any Object using the Squirrel Trait
 
 ```php
-$user->isCached();          // Returns true if the current object is stored in cache.
-$user->remember();          // Will store the object in Cache
-$user->forget();            // Will remove the object from Cache
-$user->getUniqueKeys();     // Get's all the unique keys on the Object.
-$user->cacheKeys();         // Will return an array of all the Cache keys used to store the object
-$user->primaryCacheKey();   // Will return the primary cache key for the object.
-$user->cacheExpirationMinutes(); // Returns the number of minutes cache records stay available.
-
-User::isCacheing();         // Returns true if Cacheing is on for User models
+$user->isCached();                  // Returns true if the current object is stored in cache.
+$user->remember();                  // Will store the object in Cache
+$user->forget();                    // Will remove the object from Cache
+$user->getUniqueKeys();             // Get's all the unique keys on the Object.
+$user->cacheKeys();                 // Will return an array of all the Cache keys used to store the object
+$user->primaryCacheKey();           // Will return the primary cache key for the object.
+$user->cacheExpirationMinutes();    // Returns the number of minutes cache records stay available.
+$user->isCacheing();                // Returns true if Cacheing is on for User models
 ```
 
 ### Queries Supported
@@ -130,4 +129,5 @@ By default, Models inherit a method called `newBaseQueryBuilder()` which is resp
 The `SquirrelQueryBuilder->get()` method does the actual querying.  However, before we query the data, we first check to see if our model is cached via any unique keys, if so, we return it, otherwise, we do the query.  Finally, after the query is executed, we save the retrieved data in cache so it doesn't get hit again until the data expires.
 
 Cache keys are stored in the following format:
+
 `SquirrelCache::$cacheKeyPrefix . "::" . get_class($model) . "::" . serialize(uniquekey);`
