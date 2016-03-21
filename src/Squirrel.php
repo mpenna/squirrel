@@ -44,7 +44,7 @@ trait Squirrel
     public function getUniqueKeys()
     {
         $primaryKey = $this->getKeyName();
-        return [$primaryKey, 'uuid', ['status','account_id']];
+        return [$primaryKey];
     }
 
     /**
