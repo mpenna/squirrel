@@ -108,3 +108,26 @@ $user->cacheExpirationMinutes(); // Returns the number of minutes cache records 
 
 User::isCacheing();         // Returns true if Cacheing is on for User models
 ```
+
+### Queries Supported
+
+Squirrel is meant to support multiple unique keys, as well as compound unique keys, so any query that is attempting to bring back a single row based on a unique key will work.  However, you may also perform an "In" query, as long as that's the only part of the query.  See below:
+
+```php
+// These queries work
+User::find(1);
+User::whereId(1)->get();
+User::whereAccountId(12)->whereEmail('foo@bar.com')->get();  // This works because we return a compound unique key on the model
+User::whereIn('id', [1,2,3,4,5])->get(); // Also works, because it will try to find all the individual records
+```
+
+### Under the Hood
+
+The way Squirrel works is by extending the default `\Illuminate\Database\Query\Builder` Class, which is responsible for executing queries for models.  
+
+By default, Models inherit a method called `newBaseQueryBuilder()` which is responsible for returning the Builder object.  We overload this method so we can return the `SquirrelQueryBuilder` object instead.
+
+The `SquirrelQueryBuilder->get()` method does the actual querying.  However, before we query the data, we first check to see if our model is cached via any unique keys, if so, we return it, otherwise, we do the query.  Finally, after the query is executed, we save the retrieved data in cache so it doesn't get hit again until the data expires.
+
+Cache keys are stored in the following format:
+`SquirrelCache::$cacheKeyPrefix . "::" . get_class($model) . "::" . serialize(uniquekey);`
