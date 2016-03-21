@@ -90,11 +90,29 @@ class SquirrelQueryBuilder extends \Illuminate\Database\Query\Builder
             $models = [];
             foreach( $cacheKeys as $key ) {
                 $model = SquirrelCache::get( $key );
+
                 if( $model ) {
+                    if( $deletedAt = $query->deletedAtObject() ) {
+                        if( array_key_exists($deletedAt->column, $model) ) {
+                            if( $deletedAt->value == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NULL && !empty($model[$deletedAt->column]) ) {
+                                // The query requires the deleted at column be empty
+                                return;
+                            }
+                            if( $deletedAt->value == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NOT_NULL && empty($model[$deletedAt->column]) ) {
+                                // The query requires the deleted at column have a value
+                                return;
+                            }
+                        } else {
+                            // The deleted at column could not be found, so we are not going to return anything
+                            return;
+                        }
+                    }
+
                     $models[] = (object)$model;
-                } else {
-                    return;
+                    continue;
                 }
+                
+                return;
             }
 
             return $models;
