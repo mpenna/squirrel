@@ -1,6 +1,6 @@
 # Squirrel
 
-Squirrel is a package for Laravel that automatically caches and retrieves models when querying records using [Eloquent ORM](http://laravel.com/docs/eloquent).  When Squirrel is used, you can expect to see orders of magnitude fewer queries to your database, with 100% confidence you will never be retrieving stale data from Cache.
+Squirrel is the best Eloquent cacheing solution.  A package for Laravel that automatically caches and retrieves models when querying records using [Eloquent ORM](http://laravel.com/docs/eloquent).  When Squirrel is used, you can expect to see orders of magnitude fewer queries to your database, with 100% confidence you will never be retrieving stale data from Cache.
 
 ## License
 
