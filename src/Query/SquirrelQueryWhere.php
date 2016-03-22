@@ -39,7 +39,7 @@ class SquirrelQueryWhere
      * 
      * @param array $whereData
      */
-    public function __construct( array $whereData )
+    public function __construct(array $whereData)
     {
         $this->loadData($whereData);
     }
@@ -52,8 +52,8 @@ class SquirrelQueryWhere
      */
     private function loadData(array $whereData)
     {
-        $this->type        = Arr::get($whereData, self::KEY_TYPE, null );
-        $this->boolean     = Arr::get($whereData, self::KEY_BOOLEAN, null );
+        $this->type        = Arr::get($whereData, self::KEY_TYPE, null);
+        $this->boolean     = Arr::get($whereData, self::KEY_BOOLEAN, null);
         $this->column      = $this->getColumnName($whereData);
         $this->operator    = $this->getOperator($whereData);
         $this->value       = $this->getValue($whereData);
@@ -67,7 +67,7 @@ class SquirrelQueryWhere
      */
     private function getColumnName(array $whereData)
     {
-        $column = Arr::get($whereData, self::KEY_COLUMN, null );
+        $column = Arr::get($whereData, self::KEY_COLUMN, null);
         $column = str_replace("`", "", $column);
         $column = substr($column, (strrpos($column, ".") ?: -1) +1); // Get everything after the `dot`
         return $column;
@@ -81,10 +81,10 @@ class SquirrelQueryWhere
      */
     private function getOperator(array $whereData)
     {
-        $operator = Arr::get($whereData, self::KEY_OPERATOR, null );
-        if( in_array($this->type, [self::WHERE_CLAUSE_TYPE_NULL, self::WHERE_CLAUSE_TYPE_NOT_NULL]) ) {
+        $operator = Arr::get($whereData, self::KEY_OPERATOR, null);
+        if (in_array($this->type, [self::WHERE_CLAUSE_TYPE_NULL, self::WHERE_CLAUSE_TYPE_NOT_NULL])) {
             $operator = self::WHERE_CLAUSE_OPERATOR_IS;
-        } else if( $this->type == self::WHERE_CLAUSE_TYPE_IN ) {
+        } elseif ($this->type == self::WHERE_CLAUSE_TYPE_IN) {
             $operator = self::WHERE_CLAUSE_TYPE_IN;
         }
         return $operator;
@@ -99,7 +99,7 @@ class SquirrelQueryWhere
     private function getValue(array $whereData)
     {
         $valueKey = self::KEY_VALUE;
-        switch( $this->type ) {
+        switch ($this->type) {
             case self::WHERE_CLAUSE_TYPE_BASIC:
                 $valueKey = self::KEY_VALUE;
                 break;

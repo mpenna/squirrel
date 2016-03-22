@@ -15,7 +15,7 @@ class SquirrelQueryBuilder extends \Illuminate\Database\Query\Builder
 {
     private $sourceModel;
 
-    public function setSourceModel( Model $sourceModel )
+    public function setSourceModel(Model $sourceModel)
     {
         $this->sourceModel = $sourceModel;
     }
@@ -27,7 +27,7 @@ class SquirrelQueryBuilder extends \Illuminate\Database\Query\Builder
 
     private function sourceObjectDeletedAtColumnName()
     {
-        if( method_exists($this->sourceModel, 'getDeletedAtColumn') ) {
+        if (method_exists($this->sourceModel, 'getDeletedAtColumn')) {
             return $this->sourceModel->getDeletedAtColumn();
         }
     }
@@ -42,18 +42,18 @@ class SquirrelQueryBuilder extends \Illuminate\Database\Query\Builder
      */
     public function get($columns = array('*'))
     {
-        if( $this->sourceModel->isCacheing() ) {
+        if ($this->sourceModel->isCacheing()) {
             $cachedModels = $this->findCachedModels();
             
-            if( !empty($cachedModels) ) {
+            if (!empty($cachedModels)) {
                 return $cachedModels;
             }
         }
 
         $results = parent::get($columns);
 
-        foreach( $results as $result ) {
-            SquirrelCache::remember( $this->sourceModel, (array)$result );
+        foreach ($results as $result) {
+            SquirrelCache::remember($this->sourceModel, (array)$result);
         }
 
         return $results;
@@ -61,44 +61,44 @@ class SquirrelQueryBuilder extends \Illuminate\Database\Query\Builder
 
     private function findCachedModels()
     {
-        if( !$this->sourceModel ) {
+        if (!$this->sourceModel) {
             return false;
         }
 
         $uniqueKeys   = $this->sourceModel->getUniqueKeys();
 
         // Early validation allows us to fail immediately on obvious unsupported query types
-        if( empty($uniqueKeys) || $this->distinct || $this->limit > 1 || 
-            !empty($this->groups) || !empty($this->havings) || !empty($this->orders)  || !empty($this->offset)  || 
-            !empty($this->unions) || !empty($this->joins)   || !empty($this->columns) ||  empty($this->wheres) ) {
+        if (empty($uniqueKeys) || $this->distinct || $this->limit > 1 ||
+            !empty($this->groups) || !empty($this->havings) || !empty($this->orders)  || !empty($this->offset)  ||
+            !empty($this->unions) || !empty($this->joins)   || !empty($this->columns) ||  empty($this->wheres)) {
             return false;
         }
 
-        $query = new SquirrelQuery( $this->wheres, $this->sourceObjectDeletedAtColumnName() );
+        $query = new SquirrelQuery($this->wheres, $this->sourceObjectDeletedAtColumnName());
 
         $searchingKey   = $query->uniqueKeyString();
         $modelKeys      = SquirrelCache::uniqueKeys($this->sourceModel);
-        $cacheKeyPrefix = SquirrelCache::getCacheKeyPrefix( get_class($this->sourceModel) );
+        $cacheKeyPrefix = SquirrelCache::getCacheKeyPrefix(get_class($this->sourceModel));
 
-        if( array_key_exists($searchingKey, $modelKeys) ) {
+        if (array_key_exists($searchingKey, $modelKeys)) {
             $cacheKeys = $query->cacheKeys($cacheKeyPrefix);
 
-            if( empty($cacheKeys) ) {
+            if (empty($cacheKeys)) {
                 return;
             }
 
             $models = [];
-            foreach( $cacheKeys as $key ) {
-                $model = SquirrelCache::get( $key );
+            foreach ($cacheKeys as $key) {
+                $model = SquirrelCache::get($key);
 
-                if( $model ) {
-                    if( $deletedAt = $query->deletedAtObject() ) {
-                        if( array_key_exists($deletedAt->column, $model) ) {
-                            if( $deletedAt->value == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NULL && !empty($model[$deletedAt->column]) ) {
+                if ($model) {
+                    if ($deletedAt = $query->deletedAtObject()) {
+                        if (array_key_exists($deletedAt->column, $model)) {
+                            if ($deletedAt->value == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NULL && !empty($model[$deletedAt->column])) {
                                 // The query requires the deleted at column be empty
                                 return;
                             }
-                            if( $deletedAt->value == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NOT_NULL && empty($model[$deletedAt->column]) ) {
+                            if ($deletedAt->value == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NOT_NULL && empty($model[$deletedAt->column])) {
                                 // The query requires the deleted at column have a value
                                 return;
                             }

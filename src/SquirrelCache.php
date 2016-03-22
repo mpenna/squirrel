@@ -19,7 +19,7 @@ class SquirrelCache
      * 
      * @param boolean $active
      */
-    public static function setCacheActive( $active = true ) 
+    public static function setCacheActive($active = true)
     {
         static::$cacheActive = (bool)$active;
     }
@@ -40,7 +40,7 @@ class SquirrelCache
      * 
      * @param string
      */
-    public static function setCacheKeyPrefix( $cacheKeyPrefix )
+    public static function setCacheKeyPrefix($cacheKeyPrefix)
     {
         static::$cacheKeyPrefix = $cacheKeyPrefix;
     }
@@ -51,7 +51,7 @@ class SquirrelCache
      * @param  string $className
      * @return string
      */
-    public static function getCacheKeyPrefix( $className = null )
+    public static function getCacheKeyPrefix($className = null)
     {
         $keyPrefix = (!empty($className)) ? static::$cacheKeyPrefix . "::" . $className : static::$cacheKeyPrefix;
         return $keyPrefix . "::";
@@ -66,19 +66,19 @@ class SquirrelCache
      * @param  array $modelAttributes
      * @return array Returns an array of cache keys, keyed off the column names.
      */
-    public static function uniqueKeys( Model $sourceObject )
+    public static function uniqueKeys(Model $sourceObject)
     {
         $objectKeys      = $sourceObject->getUniqueKeys();
         $primaryKey      = $sourceObject->getKeyName();
 
-        if( !in_array($primaryKey, $objectKeys) ) {
+        if (!in_array($primaryKey, $objectKeys)) {
             $objectKeys[] = $primaryKey;
         }
 
         $uniqueKeys = [];
-        foreach( $objectKeys as $value ) {
+        foreach ($objectKeys as $value) {
             $key = $value;
-            if( is_array($key) ) {
+            if (is_array($key)) {
                 sort($key);
                 sort($value);
                 $key = implode(",", $key);
@@ -96,22 +96,21 @@ class SquirrelCache
      * @param  array|null $modelAttributes
      * @return array
      */
-    public static function cacheKeys( Model $sourceObject, array $modelAttributes = null )
+    public static function cacheKeys(Model $sourceObject, array $modelAttributes = null)
     {
         $modelAttributes = (!empty($modelAttributes)) ? $modelAttributes : $sourceObject->getAttributes();
         $uniqueKeys      = static::uniqueKeys($sourceObject);
-        $prefix          = static::getCacheKeyPrefix( get_class($sourceObject) );
+        $prefix          = static::getCacheKeyPrefix(get_class($sourceObject));
 
         $cacheKeys = [];
-        foreach( $uniqueKeys as $key => $columns )
-        {
+        foreach ($uniqueKeys as $key => $columns) {
             $columns = (!is_array($columns)) ? [$columns] : $columns;
 
             $keyedByColumn = [];
-            foreach( $columns as $column ) {
+            foreach ($columns as $column) {
                 // If the column doesn't exist in the model attributes, we don't return the cache key at all
-                if( !array_key_exists($column, $modelAttributes) ) {
-                    continue 2; 
+                if (!array_key_exists($column, $modelAttributes)) {
+                    continue 2;
                 }
 
                 $keyedByColumn[$column] = strval($modelAttributes[$column]);
@@ -130,10 +129,10 @@ class SquirrelCache
      * @param  array|null $modelAttributes [description]
      * @return [type]                      [description]
      */
-    public static function primaryCacheKey( Model $sourceObject, array $modelAttributes = null )
+    public static function primaryCacheKey(Model $sourceObject, array $modelAttributes = null)
     {
         $keys = static::cacheKeys($sourceObject, $modelAttributes);
-        return array_get( $keys, $sourceObject->getKeyName() );
+        return array_get($keys, $sourceObject->getKeyName());
     }
 
     /**
@@ -145,18 +144,18 @@ class SquirrelCache
      * @param  array $modelAttributes
      * @return null
      */
-    public static function remember( Model $sourceObject, array $modelAttributes = null )
+    public static function remember(Model $sourceObject, array $modelAttributes = null)
     {
-        $cacheKeys       = static::cacheKeys( $sourceObject, $modelAttributes );
-        $primaryCacheKey = static::primaryCacheKey( $sourceObject, $modelAttributes );
+        $cacheKeys       = static::cacheKeys($sourceObject, $modelAttributes);
+        $primaryCacheKey = static::primaryCacheKey($sourceObject, $modelAttributes);
         $expiration      = $sourceObject->cacheExpirationMinutes();
         
         $modelAttributes = (!empty($modelAttributes)) ? $modelAttributes : $sourceObject->getAttributes();
 
         Cache::put($primaryCacheKey, $modelAttributes, $expiration);
 
-        foreach( $cacheKeys as $cacheKey ) {
-            if( $cacheKey != $primaryCacheKey ) {
+        foreach ($cacheKeys as $cacheKey) {
+            if ($cacheKey != $primaryCacheKey) {
                 Cache::put($cacheKey, $primaryCacheKey, $expiration);
             }
         }
@@ -170,11 +169,11 @@ class SquirrelCache
      * @param  array $modelAttributes
      * @return null
      */
-    public static function forget( Model $sourceObject, array $modelAttributes = null )
+    public static function forget(Model $sourceObject, array $modelAttributes = null)
     {
-        $cacheKeys = static::cacheKeys( $sourceObject, $modelAttributes );
+        $cacheKeys = static::cacheKeys($sourceObject, $modelAttributes);
 
-        foreach( $cacheKeys as $cacheKey ) {
+        foreach ($cacheKeys as $cacheKey) {
             Cache::forget($cacheKey);
         }
     }
@@ -188,16 +187,16 @@ class SquirrelCache
      * @param  string $cacheKey
      * @return array|null
      */
-    public static function get( $cacheKey )
+    public static function get($cacheKey)
     {
-        if( !static::isCacheActive() ) {
+        if (!static::isCacheActive()) {
             return false;
         }
 
         $cacheTagPrefix = static::getCacheKeyPrefix();
 
-        if( $data = Cache::get($cacheKey) ) {
-            if( is_string($data) && (substr($data, 0, strlen($cacheTagPrefix)) == $cacheTagPrefix) ) {
+        if ($data = Cache::get($cacheKey)) {
+            if (is_string($data) && (substr($data, 0, strlen($cacheTagPrefix)) == $cacheTagPrefix)) {
                 // If the data returned from cache, is a reference to another cache key, we return that one instead.
                 $data = Cache::get($data);
             }

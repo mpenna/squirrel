@@ -13,7 +13,7 @@ trait Squirrel
 {
     public function __construct(array $attributes = [])
     {
-        if( !is_subclass_of($this, "Illuminate\Database\Eloquent\Model") ) {
+        if (!is_subclass_of($this, "Illuminate\Database\Eloquent\Model")) {
             throw new InvalidSquirrelModelException("Models using the Squirrel trait must also extend from the base Eloquent Model.");
         }
 
@@ -29,7 +29,7 @@ trait Squirrel
      * @static
      * @return null
      */
-    protected final static function bootSquirrel()
+    final protected static function bootSquirrel()
     {
         static::saved(function ($model) {
             $model->forget();
@@ -71,7 +71,7 @@ trait Squirrel
     protected function isCacheActive()
     {
         // Defaulted the trait to Active
-        return true; 
+        return true;
     }
 
 
@@ -84,7 +84,7 @@ trait Squirrel
      * @static
      * @return boolean
      */
-    public final function isCacheing()
+    final public function isCacheing()
     {
         return ($this->isCacheActive() && SquirrelCache::isCacheActive());
     }
@@ -100,7 +100,7 @@ trait Squirrel
      */
     public function cacheExpirationMinutes()
     {
-        return (60 * 24); 
+        return (60 * 24);
     }
 
     /**
@@ -109,9 +109,9 @@ trait Squirrel
      * @access public 
      * @return null
      */
-    public final function remember()
+    final public function remember()
     {
-        SquirrelCache::remember( $this, $this->getAttributes() );
+        SquirrelCache::remember($this, $this->getAttributes());
     }
 
     /**
@@ -120,9 +120,9 @@ trait Squirrel
      * @access public
      * @return null
      */
-    public final function forget()
+    final public function forget()
     {
-        SquirrelCache::forget( $this, $this->getAttributes() );
+        SquirrelCache::forget($this, $this->getAttributes());
     }
 
     /**
@@ -131,9 +131,9 @@ trait Squirrel
      * @access public
      * @return array  Returns an array of cache keys
      */
-    public final function cacheKeys()
+    final public function cacheKeys()
     {
-        return SquirrelCache::cacheKeys( $this, $this->getAttributes() );
+        return SquirrelCache::cacheKeys($this, $this->getAttributes());
     }
 
     /**
@@ -141,9 +141,9 @@ trait Squirrel
      * 
      * @return [type] [description]
      */
-    public final function primaryCacheKey()
+    final public function primaryCacheKey()
     {
-        return SquirrelCache::primaryCacheKey( $this, $this->getAttributes() );
+        return SquirrelCache::primaryCacheKey($this, $this->getAttributes());
     }
 
     /*****************************************************************************************************************

@@ -11,7 +11,7 @@ class SquirrelQuery
     public $wheres = [];
     private $isCacheable;
 
-    public function __construct( array $whereData, $deletedAtColumnName = null )
+    public function __construct(array $whereData, $deletedAtColumnName = null)
     {
         $this->deletedAtColumnName = $deletedAtColumnName;
         $this->loadData($whereData);
@@ -22,10 +22,10 @@ class SquirrelQuery
      * 
      * @return null
      */
-    private function loadData( array $whereData )
+    private function loadData(array $whereData)
     {
-        foreach( $whereData as $where ) {
-            $this->wheres[] = new SquirrelQueryWhere( $where );
+        foreach ($whereData as $where) {
+            $this->wheres[] = new SquirrelQueryWhere($where);
         }
 
         $this->sortAlphabetical();
@@ -39,7 +39,7 @@ class SquirrelQuery
      */
     private function sortAlphabetical()
     {
-        usort($this->wheres, function($a, $b) {
+        usort($this->wheres, function ($a, $b) {
             return strcmp($a->column, $b->column);
         });
     }
@@ -55,7 +55,7 @@ class SquirrelQuery
         $wheres = $this->allExcludingDeletedAt();
 
         $columnNames = [];
-        foreach( $wheres as $where ) {
+        foreach ($wheres as $where) {
             $columnNames[] = $where->column;
         }
         return implode(",", $columnNames);
@@ -67,13 +67,13 @@ class SquirrelQuery
      * 
      * @return array  Array of cache key strings
      */
-    public function cacheKeys( $cacheKeyPrefix = '' )
+    public function cacheKeys($cacheKeyPrefix = '')
     {
         $keys = [];
-        if( $this->isCacheable() ) {
-            if( $where = $this->inStatement() ) {
-                foreach( $where->value as $value ) {
-                    $keys[] = $cacheKeyPrefix . serialize( [ $where->column => strval($value) ] );
+        if ($this->isCacheable()) {
+            if ($where = $this->inStatement()) {
+                foreach ($where->value as $value) {
+                    $keys[] = $cacheKeyPrefix . serialize([ $where->column => strval($value) ]);
                 }
             } else {
                 $keys[] = $cacheKeyPrefix . serialize($this->keysWithValues());
@@ -91,9 +91,9 @@ class SquirrelQuery
     public function keysWithValues()
     {
         $values = [];
-        if( $this->isCacheable() ) {
+        if ($this->isCacheable()) {
             $wheres = $this->allExcludingDeletedAt();
-            foreach( $wheres as $where ) {
+            foreach ($wheres as $where) {
                 $values[$where->column] = (is_array($where->value)) ? $where->value : strval($where->value);
             }
         }
@@ -119,8 +119,8 @@ class SquirrelQuery
     public function allExcludingDeletedAt()
     {
         $wheres = [];
-        foreach( $this->wheres as $where ) {
-            if( $where->column != $this->deletedAtColumnName ) {
+        foreach ($this->wheres as $where) {
+            if ($where->column != $this->deletedAtColumnName) {
                 $wheres[] = $where;
             }
         }
@@ -135,8 +135,8 @@ class SquirrelQuery
      */
     public function firstWithColumnName($columnName)
     {
-        foreach( $this->wheres as $where ) {
-            if( $where->column == $columnName ) {
+        foreach ($this->wheres as $where) {
+            if ($where->column == $columnName) {
                 return $where;
             }
         }
@@ -150,7 +150,7 @@ class SquirrelQuery
     public function inStatement()
     {
         $wheres = $this->allExcludingDeletedAt();
-        if( count($wheres) == 1 && is_array($wheres[0]->value) ) {
+        if (count($wheres) == 1 && is_array($wheres[0]->value)) {
             return $wheres[0];
         }
     }
@@ -163,7 +163,7 @@ class SquirrelQuery
      */
     public function isCacheable()
     {
-        if( is_null($this->isCacheable) ) {
+        if (is_null($this->isCacheable)) {
             $this->isCacheable = (bool)($this->containsNoDuplicates() && $this->validWheres() && $this->validArrays());
         }
         return $this->isCacheable;
@@ -177,8 +177,8 @@ class SquirrelQuery
     private function containsNoDuplicates()
     {
         $columnNames = [];
-        foreach( $this->wheres as $where ) {
-            if( in_array($where->column, $columnNames) ) {
+        foreach ($this->wheres as $where) {
+            if (in_array($where->column, $columnNames)) {
                 return false;
             }
             $columnNames[] = $where->column;
@@ -194,24 +194,24 @@ class SquirrelQuery
      */
     private function validWheres()
     {
-        foreach( $this->wheres as $where ) {
+        foreach ($this->wheres as $where) {
             // We only support 'AND' where statements, fail for anything else
-            if( $where->boolean != SquirrelQueryWhere::WHERE_CLAUSE_BOOL_AND ) {
+            if ($where->boolean != SquirrelQueryWhere::WHERE_CLAUSE_BOOL_AND) {
                 return false;
             }
 
             // If the where statement is "BASIC", we only support the "EQUALS" operator
-            if( $where->type == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_BASIC && 
-                $where->operator != SquirrelQueryWhere::WHERE_CLAUSE_OPERATOR_EQUALS ) {
+            if ($where->type == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_BASIC &&
+                $where->operator != SquirrelQueryWhere::WHERE_CLAUSE_OPERATOR_EQUALS) {
                 return false;
             }
 
             // Only deleted at columns support nullable values, so if it's nullable, and not the deleted at column, we return false.
-            if( in_array($where->type, [SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NULL, SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NOT_NULL]) ) {
-                if( $where->column != $this->deletedAtColumnName ) {
+            if (in_array($where->type, [SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NULL, SquirrelQueryWhere::WHERE_CLAUSE_TYPE_NOT_NULL])) {
+                if ($where->column != $this->deletedAtColumnName) {
                     return false;
                 }
-            } else if( !in_array($where->type, [SquirrelQueryWhere::WHERE_CLAUSE_TYPE_BASIC, SquirrelQueryWhere::WHERE_CLAUSE_TYPE_IN]) ) {
+            } elseif (!in_array($where->type, [SquirrelQueryWhere::WHERE_CLAUSE_TYPE_BASIC, SquirrelQueryWhere::WHERE_CLAUSE_TYPE_IN])) {
                 // We don't support other types of where clauses than BASIC and IN
                 return false;
             }
@@ -228,8 +228,8 @@ class SquirrelQuery
     private function validArrays()
     {
         $wheres = $this->allExcludingDeletedAt();
-        foreach( $wheres as $where ) {
-            if( $where->operator == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_IN || is_array($where->value) ) {
+        foreach ($wheres as $where) {
+            if ($where->operator == SquirrelQueryWhere::WHERE_CLAUSE_TYPE_IN || is_array($where->value)) {
                 // We allow a single IN statement
                 return (count($wheres) == 1);
             }
