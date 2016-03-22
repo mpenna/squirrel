@@ -113,11 +113,26 @@ $user->isCacheing();                // Returns true if Cacheing is on for User m
 Squirrel is meant to support multiple unique keys, as well as compound unique keys, so any query that is attempting to bring back a single row based on a unique key will work.  However, you may also perform an "In" query, as long as that's the only part of the query.  See below:
 
 ```php
-// These queries work
+// Simple ID Queries
 User::find(1);
 User::whereId(1)->get();
-User::whereAccountId(12)->whereEmail('foo@bar.com')->get();  // This works because we return a compound unique key on the model
-User::whereIn('id', [1,2,3,4,5])->get(); // Also works, because it will try to find all the individual records
+
+// This works because we return a compound unique key on the model
+User::whereAccountId(12)->whereEmail('foo@bar.com')->get();  
+
+// Also works, because it will try to find all the individual records
+User::whereIn('id', [1,2,3,4,5])->get(); 
+
+// Works because uuid is returned as a unique key on the model
+User::whereUuid('12345-12346-123456-12356')->first(); 
+
+// THESE QUERIES DO NOT WORK WITH CACHEING, AND WILL QUERY THE DB
+
+// WON'T CACHE because the "=" equals sign is the only supported operator.
+User::where('id', '>', 50)->get();
+
+// WON'T CACHE because the field is not defined as a unique key on the model
+User::wherePlanId(23)->first();
 ```
 
 ### Under the Hood
