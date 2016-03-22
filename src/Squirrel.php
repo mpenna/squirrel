@@ -2,6 +2,7 @@
 namespace Eloquent\Cache;
 
 use Eloquent\Cache\Query\SquirrelQueryBuilder;
+use Eloquent\Cache\Exceptions\InvalidSquirrelModelException;
 
 /**
  * Trait for the Squirrel package.  A Laravel package that automatically caches and retrieves models 
@@ -10,6 +11,15 @@ use Eloquent\Cache\Query\SquirrelQueryBuilder;
  */
 trait Squirrel
 {
+    public function __construct(array $attributes = [])
+    {
+        if( !is_subclass_of($this, "Illuminate\Database\Eloquent\Model") ) {
+            throw new InvalidSquirrelModelException("Models using the Squirrel trait must also extend from the base Eloquent Model.");
+        }
+
+        return parent::__construct($attributes);
+    }
+
     /**
      * For cacheing to behave the way we expect, we need to remove the model from cache every time it is
      * saved or deleted.  That way, the next time that data is read, we are reading fresh data from our 
