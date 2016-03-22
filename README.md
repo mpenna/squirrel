@@ -146,3 +146,9 @@ The `SquirrelQueryBuilder->get()` method does the actual querying.  However, bef
 Cache keys are stored in the following format:
 
 `SquirrelCache::$cacheKeyPrefix . "::" . get_class($model) . "::" . serialize(uniquekey);`
+
+Example for User model where id=1:
+Squirrel::App\\User::a:1:{s:2:"id";s:1:"1";}
+
+Example for User model where account_id=27 and email=foo@bar.com:
+Squirrel::App\\User::a:2:{s:10:"account_id";s:2:"27";s:5:"email";s:11:"foo@bar.com";}
