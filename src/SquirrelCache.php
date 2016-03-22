@@ -11,7 +11,7 @@ class SquirrelCache
 
 
     // Simple way to namespace cache tags with a unique ID
-    private static $cacheKeyPrefix = "Squirrel::";
+    private static $cacheKeyPrefix = "Squirrel";
 
     /**
      * Set's the global cache active setting to true or false.  This is the master override switch to turn 
@@ -53,8 +53,8 @@ class SquirrelCache
      */
     public static function getCacheKeyPrefix( $className = null )
     {
-        $keyPrefix = static::$cacheKeyPrefix;
-        return (!empty($className)) ? $keyPrefix . $className . "::" : $keyPrefix;
+        $keyPrefix = (!empty($className)) ? static::$cacheKeyPrefix . "::" . $className : static::$cacheKeyPrefix;
+        return $keyPrefix . "::";
     }
 
     /**
