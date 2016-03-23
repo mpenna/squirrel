@@ -1,10 +1,8 @@
 <?php
 
-use Eloquent\Cache\Squirrel;
 use Eloquent\Cache\SquirrelCache;
-use Eloquent\Cache\Query\SquirrelQueryBuilder;
 
-class SquirrelTests extends PHPUnit_Framework_TestCase
+class SquirrelModelTests extends PHPUnit_Framework_TestCase
 {
     const CACHE_PREFIX = "Squirrel";
 
@@ -49,7 +47,7 @@ class SquirrelTests extends PHPUnit_Framework_TestCase
         $primaryKey = $user->getKeyName();
 
         $this->assertContains( $primaryKey, $uniqueKeys, "Default return for models unique keys should return the primary key, but it did not." );
-        $this->assertEquals( 1, count($uniqueKeys), "Expected default unique keys to come back with a single element, but it did not." );
+        $this->assertCount( 1, $uniqueKeys, "Expected default unique keys to come back with a single element, but it did not." );
 
         SquirrelCache::setCacheActive(true); // Set global cache to true
         $this->assertTrue( $user->isCacheing(), "The global cache is true, and the model cache should return true for cacheing, but it is not." );
@@ -58,7 +56,7 @@ class SquirrelTests extends PHPUnit_Framework_TestCase
 
         $keys = $user->cacheKeys();
         
-        $this->assertEquals( 1, count($keys), "Expected 1 cache key returned, but received different amount." );
+        $this->assertCount( 1, $keys, "Expected 1 cache key returned, but received different amount." );
 
         $prefix = SquirrelCache::getCacheKeyPrefix( get_class($user) );
         $primary = [
@@ -84,7 +82,7 @@ class SquirrelTests extends PHPUnit_Framework_TestCase
         $primaryKey = $user->getKeyName();
 
         $this->assertContains( $primaryKey, $uniqueKeys );
-        $this->assertEquals( 3, count($uniqueKeys) );
+        $this->assertcount( 3, $uniqueKeys );
 
         SquirrelCache::setCacheActive(true); // Set global cache to true
         $this->assertFalse( $user->isCacheing(), "Modified User Model has cache turned off, but it's still returning true." );
@@ -92,7 +90,7 @@ class SquirrelTests extends PHPUnit_Framework_TestCase
         $this->assertEquals( ((24*60) *7), $user->cacheExpirationMinutes() );
 
         $keys = $user->cacheKeys();
-        $this->assertEquals( 3, count($keys), "Expected 3 cache keys returned, but received different amount." );
+        $this->assertCount( 3, $keys, "Expected 3 cache keys returned, but received different amount." );
 
         $prefix = SquirrelCache::getCacheKeyPrefix( get_class($user) );
         $primary = [
