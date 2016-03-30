@@ -11,23 +11,49 @@ use Eloquent\Cache\SquirrelCache;
  * to the database.
  * 
  */
-class SquirrelQueryBuilder extends \Illuminate\Database\Query\Builder
+class SquirrelQueryBuilder extends Builder
 {
     private $sourceModel;
 
+    /**
+     * Models with relationships will ultimately use this method to spawn child queries; as such, we need to ensure we hydrate
+     * the source model in that sub query as well.
+     * 
+     * @return SquirrelQueryBuilder
+     */
+    public function newQuery()
+    {
+        return new Builder($this->connection, $this->grammar, $this->processor);
+    }
+
+    /**
+     * Setter method for setting the source model.
+     * 
+     * @param Model $sourceModel
+     */
     public function setSourceModel(Model $sourceModel)
     {
         $this->sourceModel = $sourceModel;
     }
 
+    /**
+     * Getter method for getting the source model.
+     * 
+     * @return Model
+     */
     public function sourceModel()
     {
         return $this->sourceModel;
     }
 
+    /**
+     * Helper method to get the source object's deleted_at column name.
+     * 
+     * @return string
+     */
     private function sourceObjectDeletedAtColumnName()
     {
-        if (method_exists($this->sourceModel, 'getDeletedAtColumn')) {
+        if ($this->sourceModel && method_exists($this->sourceModel, 'getDeletedAtColumn')) {
             return $this->sourceModel->getDeletedAtColumn();
         }
     }
@@ -42,12 +68,10 @@ class SquirrelQueryBuilder extends \Illuminate\Database\Query\Builder
      */
     public function get($columns = array('*'))
     {
-        if ($this->sourceModel->isCacheing()) {
-            $cachedModels = $this->findCachedModels();
-            
-            if (!empty($cachedModels)) {
-                return $cachedModels;
-            }
+        $cachedModels = $this->findCachedModels();
+        
+        if (!empty($cachedModels)) {
+            return $cachedModels;
         }
 
         $results = parent::get($columns);
@@ -59,9 +83,14 @@ class SquirrelQueryBuilder extends \Illuminate\Database\Query\Builder
         return $results;
     }
 
+    /**
+     * Attempts to find cached models based on the current query.
+     * 
+     * @return array
+     */
     private function findCachedModels()
     {
-        if (!$this->sourceModel) {
+        if (!$this->sourceModel || !$this->sourceModel->isCacheing()) {
             return false;
         }
 
