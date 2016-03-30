@@ -16,10 +16,10 @@ class SquirrelQueryBuilder extends Builder
     private $sourceModel;
 
     /**
-     * Models with relationships will ultimately use this method to spawn child queries; as such, we need to ensure we hydrate
-     * the source model in that sub query as well.
+     * Models with relationships may ultimately use this method to spawn child queries; as such, we need to ensure we 
+     * don't return a SquirrelQueryBuilder object, as it will not work.
      * 
-     * @return SquirrelQueryBuilder
+     * @return \Illuminate\Database\Query\Builder
      */
     public function newQuery()
     {
