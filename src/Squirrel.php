@@ -5,9 +5,8 @@ use Eloquent\Cache\Query\SquirrelQueryBuilder;
 use Eloquent\Cache\Exceptions\InvalidSquirrelModelException;
 
 /**
- * Trait for the Squirrel package.  A Laravel package that automatically caches and retrieves models 
- * when querying records using Eloquent ORM.
- * 
+ * Trait for the Squirrel package. A Laravel package that automatically caches
+ * and retrieves models when querying records using Eloquent ORM.
  */
 trait Squirrel
 {
@@ -21,9 +20,10 @@ trait Squirrel
     }
 
     /**
-     * For cacheing to behave the way we expect, we need to remove the model from cache every time it is
-     * saved or deleted.  That way, the next time that data is read, we are reading fresh data from our 
-     * data source.
+     * For caching to behave the way we expect, we need to remove the model
+     * from the cache every time it is either saved or deleted. That way,
+     * the next time that data is read, fresh data will be read from
+     * the data source.
      *
      * @access protected
      * @static
@@ -40,29 +40,15 @@ trait Squirrel
         });
     }
 
-
     /**
-     * Returns an array of column names that are unique identifiers for this model in the DB.  By default, it will return
-     * only ['id'].  Classes using this trait overwrite this method, and return their own array.  The returned array may contain elements
-     * that are string column names, or arrays of string column names for composite unique keys.
+     * Classes using this trait may use their own logic to determine if classes
+     * should use caching or not.
      *
-     * @access public
-     * @static
-     * @return  array  Returns an array of unique keys.  Elements may be strings, or arrays of strings for a composite index.
-     * 
-     */
-    public function getUniqueKeys()
-    {
-        $primaryKey = $this->getKeyName();
-        return [$primaryKey];
-    }
-
-    /**
-     * Classes using this trait may use their own logic to determine if classes should use cacheing
-     * or not.  
-     * 
-     * If this method returns FALSE, then no cacheing logic will be used for Models of this Class.
-     * If this method returns TRUE, then cacheing will be used for Models of this Class.
+     * If this method returns FALSE, then no caching logic will be used for
+     * Models of this Class.
+     *
+     * If this method returns TRUE, then caching will be used for Models
+     * of this Class.
      *
      * @access protected
      * @static
@@ -74,10 +60,44 @@ trait Squirrel
         return true;
     }
 
+    /**
+     * Returns an array of column names that are unique identifiers for this
+     * model in the DB. By default, it will return only ['id']. Classes
+     * using this trait should overwrite this method, and return their
+     * own array. The returned array may contain elements that are
+     * string column names, or arrays of string column names for
+     * composite unique keys.
+     *
+     * @access public
+     * @static
+     * @return  array  Returns an array of unique keys.  Elements may be strings, or arrays of strings for a composite index.
+     *
+     */
+    public function getUniqueKeys()
+    {
+        $primaryKey = $this->getKeyName();
+        return [$primaryKey];
+    }
 
     /**
-     * Helper method to quickly determine if cacheing should be used for this class.  It will verify the model
-     * cache is active, and the global cache option is active.
+     * Models using this trait may extend this method to return a different
+     * expiration timeout for each class. This value can change depending
+     * on the frequency, or volatility of the data in your Model.
+     * By default, this method expires the data after 24 hours.
+     *
+     * @access protected
+     * @static
+     * @return  integer Number of minutes before the cache expires automatically.
+     */
+    public function cacheExpirationMinutes()
+    {
+        return (60 * 24);
+    }
+
+    /**
+     * Helper method to quickly determine if caching should be used for this
+     * class. It will verify the model cache is active, and that the global
+     * cache option is active.
      *
      * @access public
      * @final
@@ -90,23 +110,9 @@ trait Squirrel
     }
 
     /**
-     * Models using this trait may extend this method to return a different expiration
-     * timeout for each Class.  This value can change depending on the frequency, or volatility of the 
-     * data in your Model.  By default, this method expires the data after 24 hours.
-     *
-     * @access protected
-     * @static
-     * @return  integer Number of minutes before the cache expires automatically.
-     */
-    public function cacheExpirationMinutes()
-    {
-        return (60 * 24);
-    }
-
-    /**
      * Store the object attributes in cache by it's cache keys.
      *
-     * @access public 
+     * @access public
      * @return null
      */
     final public function remember()
@@ -138,7 +144,7 @@ trait Squirrel
 
     /**
      * Returns just the primary cache key.
-     * 
+     *
      * @return [type] [description]
      */
     final public function primaryCacheKey()
@@ -146,16 +152,19 @@ trait Squirrel
         return SquirrelCache::primaryCacheKey($this, $this->getAttributes());
     }
 
-    /*****************************************************************************************************************
-     *
-     *  !IMPORANT!
-     *  Method below is required to proxy requests through Eloquent apropriately.
-     *  Do not change or override.
-     * 
-     *****************************************************************************************************************/
+    /*
+    ***************************************************************************
+    *
+    * !IMPORANT!
+    *
+    * METHOD BELOW IS REQUIRED TO PROXY REQUESTS THROUGH ELOQUENT
+    * DO NOT CHANGE OR OVERRIDE
+    *
+    ***************************************************************************
+    */
 
     /**
-     * Overwrite default functionality, and return our custom SquirrelQueryBuilder.
+     * Override default functionality and return our custom SquirrelQueryBuilder.
      *
      * @access protected
      * @return \Illuminate\Database\Query\Builder

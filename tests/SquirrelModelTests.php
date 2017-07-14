@@ -38,7 +38,7 @@ class SquirrelModelTests extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * 
+     *
      */
     public function testSquirrelModelDefaults()
     {
@@ -50,12 +50,12 @@ class SquirrelModelTests extends PHPUnit_Framework_TestCase
         $this->assertCount( 1, $uniqueKeys, "Expected default unique keys to come back with a single element, but it did not." );
 
         SquirrelCache::setCacheActive(true); // Set global cache to true
-        $this->assertTrue( $user->isCacheing(), "The global cache is true, and the model cache should return true for cacheing, but it is not." );
+        $this->assertTrue( $user->isCacheing(), "The global cache is true, and the model cache should return true for caching, but it is not." );
 
         $this->assertEquals( (24*60), $user->cacheExpirationMinutes(), "Default expiration date expects 24 hours, but it came back different." );
 
         $keys = $user->cacheKeys();
-        
+
         $this->assertCount( 1, $keys, "Expected 1 cache key returned, but received different amount." );
 
         $prefix = SquirrelCache::getCacheKeyPrefix( get_class($user) );
@@ -72,7 +72,7 @@ class SquirrelModelTests extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * 
+     *
      */
     public function testModifiedSquirrelModel()
     {
