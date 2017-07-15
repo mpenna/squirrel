@@ -17,11 +17,12 @@
         "illuminate/database": "4.*|5.*"
     },
     "replace": {
-        "davidmpeace/squirrel": "^0.*"
+        "davidmpeace/squirrel": "0.*"
     },
     "autoload": {
         "psr-4": {
             "Eloquent\\Cache\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "stable"
 }
